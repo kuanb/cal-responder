@@ -1,0 +1,17 @@
+{
+  "name": "cal-responder",
+  "main": "app.js",
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "dependencies": {
+    "body-parser": "^1.15.0",
+    "cookie-parser": "^1.4.1",
+    "express": "4.13.4",
+    "express-session": "^1.13.0",
+    "twilio": "3.3.0-edge"
+  },
+  "scripts": {
+    "start": "node app.js"
+  }
+}
