@@ -1,6 +1,7 @@
 // credentials loading
 var creds = require("./creds");
 var API_KEY = creds.apiKey;
+var SESS_SECRET = creds.secret;
 var BASE_URL = "utah-court-calendar-service.herokuapp.com";
 var API_VER = "/api/v0/";
 
@@ -11,12 +12,18 @@ var app = express();
 // dependencies
 var twilio = require("twilio");
 var http = require('http');
+var session = require("express-session");
 var bodyParser = require('body-parser');
 var cookieParser = require("cookie-parser");
 
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
+app.use(session({
+	secret: SESS_SECRET,
+	resave: true,
+	saveUninitialized: true
+}));
 
 // functions
 function assemble (param, val, cb) {
@@ -24,7 +31,7 @@ function assemble (param, val, cb) {
 		host: BASE_URL,
 		path: API_VER + "event-search.json?api_key=" + API_KEY + "&" + param + "=" + encodeURI(val),
 	};
-
+console.log(options.host + options.path);
 	http.request(options, function (response) {
 		var body = "";
 		response.on("data", function(d) {
@@ -110,9 +117,8 @@ app.post("/sms", function (req, res) {
 						for (var i = 0; i < 5; i++) {
 							if (i < dates.length - 1) {
 								var d = dates[i];
-								var str = d.defendant + " (" + case_number + ")";
+								var str = d.defendant + " (" + d.case_number + ")";
 								ds.push(str);
-								// var str = "Case # " + d.case_number + " (" + d.court_date + " @" + d.court_time + " in room " + d.court_room
 							}
 						}
 						if (dates.length > 5) {
@@ -128,7 +134,7 @@ app.post("/sms", function (req, res) {
 		// case query
 		} else if (req.session.state == "method_case") {
 
-			assemble("case_number", text, function (err, dates) {
+			assemble("case_number", text.replace(new RegExp(" ", "g"), "%"), function (err, dates) {
 				if (err) {
 					twiml.sms("Sorry, I made an error. Please try again.");
 					req.session.state = "method_case";
@@ -136,7 +142,7 @@ app.post("/sms", function (req, res) {
 
 				} else {
 					if (dates.length == 0) {
-						twiml.sms("I could not find any dates for that name. Reply \"NAME\" to search by name or \"CASE\" to search by case number.");
+						twiml.sms("I could not find any dates for that case #. Reply \"NAME\" to search by name or \"CASE\" to search by case number.");
 						req.session.state = "method_indication";
 						res.send(twiml.toString());
 
@@ -145,7 +151,7 @@ app.post("/sms", function (req, res) {
 						for (var i = 0; i < 5; i++) {
 							if (i < dates.length - 1) {
 								var d = dates[i];
-								var str = d.hearing_type + " on " + d.court_date + " at " + d.court_time + " in room " + d.court_room + " at " + court_title;
+								var str = d.hearing_type + " on " + d.court_date + " at " + d.court_time + " in room " + d.court_room + " at " + d.court_title;
 								ds.push(str);
 							}
 						}
