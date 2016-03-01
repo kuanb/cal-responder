@@ -27,9 +27,16 @@ app.use(session({
 
 // functions
 function assemble (param, val, cb) {
+	var uri_encoded_text = "";
+	if (isEncoded(val)) {
+		uri_encoded_text = val;
+	} else {
+		uri_encoded_text = encodeURI(val);
+	}
+	
 	var options = {
 		host: BASE_URL,
-		path: API_VER + "event-search.json?api_key=" + API_KEY + "&" + param + "=" + encodeURI(val),
+		path: API_VER + "event-search.json?api_key=" + API_KEY + "&" + param + "=" + uri_encoded_text,
 	};
 console.log(options.host + options.path);
 	http.request(options, function (response) {
@@ -141,13 +148,6 @@ app.post("/sms", function (req, res) {
 
 		// case query
 		} else if (req.session.state == "method_case") {
-
-			var uri_encoded_text = "";
-			if (isEncoded(text)) {
-				uri_encoded_text = text;
-			} else {
-				uri_encoded_text = encodeURI(text);
-			}
 
 			assemble("case_number", uri_encoded_text, function (err, dates) {
 				if (err) {
