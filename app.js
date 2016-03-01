@@ -33,7 +33,7 @@ function assemble (param, val, cb) {
 	} else {
 		uri_encoded_text = encodeURI(val);
 	}
-	
+
 	var options = {
 		host: BASE_URL,
 		path: API_VER + "event-search.json?api_key=" + API_KEY + "&" + param + "=" + uri_encoded_text,
@@ -149,7 +149,7 @@ app.post("/sms", function (req, res) {
 		// case query
 		} else if (req.session.state == "method_case") {
 
-			assemble("case_number", uri_encoded_text, function (err, dates) {
+			assemble("case_number", text, function (err, dates) {
 				if (err) {
 					twiml.sms("Sorry, I made an error. Please try again.");
 					req.session.state = "method_case";
