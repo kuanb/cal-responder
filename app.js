@@ -31,7 +31,7 @@ function assemble (param, val, cb) {
 		host: BASE_URL,
 		path: API_VER + "event-search.json?api_key=" + API_KEY + "&" + param + "=" + encodeURI(val),
 	};
-
+console.log(options.host + options.path);
 	http.request(options, function (response) {
 		var body = "";
 		response.on("data", function(d) {
