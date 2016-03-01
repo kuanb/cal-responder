@@ -64,7 +64,7 @@ var res_types = {
 app.post("/sms", function (req, res) {
 	var twiml = new twilio.TwimlResponse();
 	var from = req.body.From.replace(/\D+/g, "");
-	var text = req.body.Body.toUpperCase();
+	var text = req.body.Body.toUpperCase().trim();
 
 	// user is new or has not communicated in 4 hours
 	if (!req.session.state || text.replace(new RegExp(" ", "g"), "") == "") {
