@@ -31,7 +31,7 @@ function assemble (param, val, cb) {
 		host: BASE_URL,
 		path: API_VER + "event-search.json?api_key=" + API_KEY + "&" + param + "=" + encodeURI(val),
 	};
-
+console.log(options.host + options.path);
 	http.request(options, function (response) {
 		var body = "";
 		response.on("data", function(d) {
@@ -145,13 +145,12 @@ app.post("/sms", function (req, res) {
 					res.send(twiml.toString());
 
 				} else {
-					console.log("here in else");
-					if (dates.length == 0) {console.log("here in else 0");
+					if (dates.length == 0) {
 						twiml.sms("I could not find any dates for that case #. Reply \"NAME\" to search by name or \"CASE\" to search by case number.");
 						req.session.state = "method_indication";
 						res.send(twiml.toString());
 
-					} if (dates.length > 0) {console.log("here in else >0");
+					} if (dates.length > 0) {
 						var ds = [];
 						for (var i = 0; i < 5; i++) {
 							if (i < dates.length - 1) {
