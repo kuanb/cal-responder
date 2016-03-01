@@ -31,7 +31,7 @@ function assemble (param, val, cb) {
 		host: BASE_URL,
 		path: API_VER + "event-search.json?api_key=" + API_KEY + "&" + param + "=" + encodeURI(val),
 	};
-console.log(options.host + options.path);
+
 	http.request(options, function (response) {
 		var body = "";
 		response.on("data", function(d) {
@@ -54,6 +54,10 @@ console.log(options.host + options.path);
 		});
 	}).end();
 };
+
+function isEncoded (str) {
+	return typeof str == "string" && decodeURIComponent(str) !== str;
+}
 
 // common response types
 var res_types = {
@@ -138,7 +142,14 @@ app.post("/sms", function (req, res) {
 		// case query
 		} else if (req.session.state == "method_case") {
 
-			assemble("case_number", encodeURI(text), function (err, dates) {
+			var uri_encoded_text = "";
+			if (isEncoded(text)) {
+				uri_encoded_text = text;
+			} else {
+				uri_encoded_text = encodeURI(text);
+			}
+
+			assemble("case_number", uri_encoded_text, function (err, dates) {
 				if (err) {
 					twiml.sms("Sorry, I made an error. Please try again.");
 					req.session.state = "method_case";
