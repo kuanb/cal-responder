@@ -68,7 +68,7 @@ app.post("/sms", function (req, res) {
 
 	// user is new or has not communicated in 4 hours
 	if (!req.session.state || text.replace(new RegExp(" ", "g"), "") == "") {
-		twiml.sms("Welcome to CourtSMS. Reply \"NAME\" to search by name or \"CASE\" to search by case number.");
+		twiml.sms("Welcome to CourtSMS. Reply \"NAME\" to search by name, \"CASE\" to search by case number, or \"MORE\" for other options.");
 		req.session.state = "method_indication";
 		res.send(twiml.toString());
 
@@ -83,6 +83,10 @@ app.post("/sms", function (req, res) {
 				res.send(twiml.toString());
 			} else if (text == "CASE") {
 				twiml.sms("To search by case, send me your case number. For example: WVC 123456789.");
+				req.session.state = "method_case";
+				res.send(twiml.toString());
+			} else if (text == "MORE") {
+				twiml.sms("Full options: Reply \"NAME\" to search by name or \"CASE\" to search by case number.");
 				req.session.state = "method_case";
 				res.send(twiml.toString());
 			} else {
@@ -134,7 +138,7 @@ app.post("/sms", function (req, res) {
 		// case query
 		} else if (req.session.state == "method_case") {
 
-			assemble("case_number", text.replace(new RegExp(" ", "g"), "%"), function (err, dates) {
+			assemble("case_number", encodeURI(text), function (err, dates) {
 				if (err) {
 					twiml.sms("Sorry, I made an error. Please try again.");
 					req.session.state = "method_case";
