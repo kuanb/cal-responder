@@ -87,7 +87,7 @@ app.post("/sms", function (req, res) {
 				res.send(twiml.toString());
 			} else if (text == "MORE") {
 				twiml.sms("Full options: Reply \"NAME\" to search by name or \"CASE\" to search by case number.");
-				req.session.state = "method_case";
+				req.session.state = "method_indication";
 				res.send(twiml.toString());
 			} else {
 				twiml.sms("Sorry I don't understand. Reply \"NAME\" to search by name or \"CASE\" to search by case number.");
