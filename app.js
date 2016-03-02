@@ -164,7 +164,7 @@ app.post("/sms", function (req, res) {
 					} if (dates.length > 0) {
 						var ds = [];
 						for (var i = 0; i < 5; i++) {
-							if (i < dates.length - 1) {
+							if (i < dates.length) {
 								var d = dates[i];
 								var str = d.hearing_type + " on " + d.court_date + " at " + d.court_time + " in room " + d.court_room + " at " + d.court_title;
 								ds.push(str);
